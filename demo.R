@@ -3,16 +3,44 @@
 ## Initial version by Iñaki Ucar using Redux
 ## Adapted to RcppRedis by Dirk Eddelbuettel
 
+tinyqueue <- function(x, ...) {
+    UseMethod("tinyqueue")
+}
+
+tinyqueue.default <- function(name, ...) {
+    redis <- new(RcppRedis::Redis)
+    structure(list(con = redis,
+                   name = name,
+                   todo = paste0(name, "_todo"),
+                   work = paste0(name, "_work"),
+                   done = paste0(name, "_done")
+                   ),
+              class = "tinyqueue")
+}
+
+.tinyqueue_validate <- function(x) {
+    stopifnot("Wrong class, expected 'tinyqueue'" = inherits(x, "tinyqueue"),
+              "Cannot reach Redis/Valkey server" = x$con$ping() == "PONG")
+    x
+}
+
+print.tinyqueue <- function(x, ...) {
+    .tinyqueue_validate(x)
+    cat("<tinyqueue object containing queue '", x$name, "'>\n", sep="")
+}
+
 useRcppRedis <- function() {
 
     ensure_queue <- function(name) {
-        redis <- new(RcppRedis::Redis)
-        list(con = redis,
-             name = name,
-             todo = paste0(name, "_todo"),
-             work = paste0(name, "_work"),
-             done = paste0(name, "_done")
-             )
+        ## redis <- new(RcppRedis::Redis)
+        ## structure(list(con = redis,
+        ##                name = name,
+        ##                todo = paste0(name, "_todo"),
+        ##                work = paste0(name, "_work"),
+        ##                done = paste0(name, "_done")
+        ##                ),
+        ##           class = "tinyqueue")
+        tinyqueue(name)
     }
 
     publish <- function(queue, message) {
@@ -47,8 +75,9 @@ useRcppRedis <- function() {
     ##system("docker run -d --rm --name valkey -p 6379:6379 valkey/valkey")
     ## assume Redis running
 
-    q <- ensure_queue("jobs")
-
+    q <- ensure_queue("somejobs")
+    print(q)
+    
     publish(q, message = "Hello world!")
     publish(q, message = "Hello again!")
     cat("\n--Messages after two enqueus\n")
