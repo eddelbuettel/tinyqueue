@@ -29,14 +29,21 @@ print.tinyqueue <- function(x, ...) {
     cat("<tinyqueue object containing queue '", x$name, "'>\n", sep="")
 }
 
+format.tinyqueue <- function(x, ...) {
+    .tinyqueue_validate(x)
+    txt <- sprintf("<%s:%d:%d:%d>",
+                   x$name,
+                   x$con$llen(x$todo),
+                   x$con$llen(x$work),
+                   x$con$llen(x$done))
+    txt
+}
+
 summary.tinyqueue <- function(x, ...) {
     .tinyqueue_validate(x)
-    #print(x)
-    cat("<tinyqueue containing todo: ", x$con$llen(x$todo), ",",
-        " work: ", x$con$llen(x$work), ",",
-        " done: ", x$con$llen(x$done),
-        ">\n", sep="")
+    cat("<tinyqueue object ", format(x), ">\n", sep="")
 }
+
 
 useRcppRedis <- function() {
 
@@ -46,6 +53,7 @@ useRcppRedis <- function() {
 
     publish <- function(queue, message) {
         .tinyqueue_validate(queue)
+        cat("Published '", message, "'\n", sep="")
         invisible(queue$con$lpush(queue$todo, message))
     }
 
@@ -60,14 +68,15 @@ useRcppRedis <- function() {
         .tinyqueue_validate(queue)
         message <- queue$con$lmove(queue$todo, queue$work, 'RIGHT', 'LEFT')
         if (is.null(message)) return(message)
-        list(queue = queue, message = message)
+        cat("Consumed '", message, "'\n", sep="")
+        message
     }
 
-    ack <- function(message) {
-        queue <- message$queue
+    ack <- function(queue, message) {
         .tinyqueue_validate(queue)
         msg <- queue$con$lmove(queue$work, queue$done, 'RIGHT', 'LEFT')
-        stopifnot("wrong message acknowledged" = all.equal(msg, message$message))
+        cat("Ack'ed '", message, "'\n", sep="")
+        stopifnot("wrong message acknowledged" = all.equal(msg, message))
         msg
     }
 
@@ -86,31 +95,29 @@ useRcppRedis <- function() {
     
     publish(q, message = "Hello world!")
     publish(q, message = "Hello again!")
-    cat("\n--Messages after two enqueus\n")
+    #cat("--Messages after two enqueus\n")
     #str(list_messages(q))
     summary(q)
     
     msg <- try_consume(q)
-    cat("\n--Consumed message 1\n")
-    cat("Message is: '", msg$message, "'\n", sep="")
-    cat("--Messages after consume\n")
+    #cat("\n--Consumed message 1\n")
+    #cat("--Messages after consume\n")
     #str(list_messages(q))
     summary(q)
 
-    m <- ack(msg)
-    cat("\n--Messages after ack 1\n")
+    m <- ack(q, msg)
+    #cat("--Messages after ack 1\n")
     #str(list_messages(q))
     summary(q)
 
     msg2 <- try_consume(q)
-    cat("\n--Consumed message 2\n")
-    cat("Message is: '", msg2$message, "'\n", sep="")
-    m2 <- ack(msg2)
-    cat("--Messages after ack 2\n")
+    #cat("--Consumed message 2\n")
+    m2 <- ack(q, msg2)
+    #cat("--Messages after ack 2\n")
     #str(list_messages(q))
     summary(q)
 
-    cat("\n--Final try consume\n")
+    #cat("--Final try consume\n")
     msg3 <- try_consume(q)
     summary(q)
 
