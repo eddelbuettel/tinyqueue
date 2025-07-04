@@ -3,6 +3,12 @@
 ## Initial version by Iñaki Ucar using Redux
 ## Adapted to RcppRedis by Dirk Eddelbuettel
 
+## TODO: task object
+## - package, version, result (of test)
+## - start, end, deltat
+## - runner id, hostname
+
+
 tinyqueue <- function(x, ...) {
     UseMethod("tinyqueue")
 }
