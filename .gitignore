@@ -71,3 +71,10 @@ vignettes/*.pdf
 *.exe
 *.out
 *.app
+
+# Emacs
+*~
+
+# Local files
+local/*.md
+local/*.txt
