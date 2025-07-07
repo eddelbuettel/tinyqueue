@@ -23,6 +23,12 @@
 #' The \code{tinyqueue} object has several associated methods to print,
 #' summarize, or format the object.
 #'
+#' The functionality takes advantage of package \pkg{RcppRedis} and its
+#' ability to process arbitrary R objects. This allows task descriptions
+#' to be \code{data.frame} or \code{list} objects as needed by the application.
+#' For the same reason, no \sQuote{schema} or alike has to be created as the
+#' queued task objects are self-sufficient as R objects.
+#'
 #' @title tinyqueue: A Simple Workqueue Object
 #' @param name character The task name for 
 #' @param ... other arguments 
