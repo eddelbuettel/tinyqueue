@@ -22,7 +22,7 @@ tinyqueue(name, ...)
 
 \method{format}{tinyqueue}(x, ...)
 
-\method{format}{tinyqueue}(x, ...)
+\method{summary}{tinyqueue}(x, ...)
 
 ensure_queue(name)
 

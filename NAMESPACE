@@ -2,6 +2,7 @@
 
 S3method(format,tinyqueue)
 S3method(print,tinyqueue)
+S3method(summary,tinyqueue)
 S3method(tinyqueue,default)
 export(ack)
 export(cleanup)

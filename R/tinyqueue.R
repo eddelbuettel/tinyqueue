@@ -88,7 +88,7 @@ format.tinyqueue <- function(x, ...) {
 }
 
 #' @rdname tinyqueue
-#' @method format tinyqueue 
+#' @method summary tinyqueue 
 #' @export
 summary.tinyqueue <- function(x, ...) {
     .tinyqueue_validate(x)
@@ -108,7 +108,7 @@ ensure_queue <- function(name) {
 #' @export
 publish <- function(queue, message) {
     .tinyqueue_validate(queue)
-    cat("Published '", message, "'\n", sep="")
+    cat("Published '", format(message), "'\n", sep="")
     invisible(queue$con$lpush(queue$todo, message))
 }
 
@@ -127,17 +127,17 @@ try_consume <- function(queue) {
     .tinyqueue_validate(queue)
     message <- queue$con$lmove(queue$todo, queue$work, 'RIGHT', 'LEFT')
     if (is.null(message)) return(message)
-    cat("Consumed '", message, "'\n", sep="")
+    cat("Consumed '", format(message), "'\n", sep="")
     message
 }
 
 #' @rdname tinyqueue
 #' @export
-ack <- function(queue, message) {
+ack <- function(queue, message, check=TRUE) {
     .tinyqueue_validate(queue)
     msg <- queue$con$lmove(queue$work, queue$done, 'RIGHT', 'LEFT')
-    cat("Ack'ed '", message, "'\n", sep="")
-    stopifnot("wrong message acknowledged" = all.equal(msg, message))
+    cat("Ack'ed '", format(message), "'\n", sep="")
+    if (check) stopifnot("wrong message acknowledged" = all.equal(msg, message))
     msg
 }
 
