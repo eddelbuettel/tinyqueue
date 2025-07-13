@@ -140,7 +140,7 @@ try_consume <- function(queue) {
 
 #' @rdname tinyqueue
 #' @export
-ack <- function(queue, message, res=0, check=TRUE) {
+ack <- function(queue, message, res=0) {
     .tinyqueue_validate(queue)
     stopifnot("Argument 'res' must be numeric" = is.numeric(res),
               "Argument 'res' must be between 0 and 2" = res >= 0 & res <= 2)
@@ -149,8 +149,8 @@ ack <- function(queue, message, res=0, check=TRUE) {
                   queue$fail,   # res == 1 aka fail
                   queue$skip)   # res == 2 aka skip
     msg <- queue$con$lmove(queue$work, tgt, 'RIGHT', 'LEFT')
+    stopifnot("wrong message acknowledged" = all.equal(msg, message))
     cat("Ack'ed '", format(message), "'\n", sep="")
-    if (check) stopifnot("wrong message acknowledged" = all.equal(msg, message))
     msg
 }
 

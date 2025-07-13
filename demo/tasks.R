@@ -21,7 +21,7 @@ Sys.sleep(0.25)
 st <- end_task(st, "done")
 print(st)
 
-st <- ack(q, st, 2, FALSE) # not checking message here
+st <- ack(q, st, 2)
 summary(q)
 
 ## cleanup

@@ -32,7 +32,7 @@ list_messages(queue)
 
 try_consume(queue)
 
-ack(queue, message, res = 0, check = TRUE)
+ack(queue, message, res = 0)
 
 cleanup(queue)
 }
