@@ -54,7 +54,9 @@ tinyqueue.default <- function(name, ...) {
                    name = name,
                    todo = paste0(name, "_todo"),
                    work = paste0(name, "_work"),
-                   done = paste0(name, "_done")
+                   done = paste0(name, "_done"),
+                   fail = paste0(name, "_fail"),
+                   skip = paste0(name, "_skip")
                    ),
               class = "tinyqueue")
 }
@@ -79,11 +81,14 @@ print.tinyqueue <- function(x, ...) {
 #' @export
 format.tinyqueue <- function(x, ...) {
     .tinyqueue_validate(x)
-    txt <- sprintf("<%s:%d:%d:%d>",
+    txt <- sprintf("<%s:%d:%d:%d:%d:%d>",
                    x$name,
                    x$con$llen(x$todo),
                    x$con$llen(x$work),
-                   x$con$llen(x$done))
+                   x$con$llen(x$done),
+                   x$con$llen(x$fail),
+                   x$con$llen(x$skip)
+                   )
     txt
 }
 
@@ -116,9 +121,11 @@ publish <- function(queue, message) {
 #' @export
 list_messages <- function(queue) {
     .tinyqueue_validate(queue)
-    list(RECV = queue$con$lrange(queue$todo, 0, -1),
-         PROC = queue$con$lrange(queue$work, 0, -1),
-         DONE = queue$con$lrange(queue$done, 0, -1))
+    list(todo = queue$con$lrange(queue$todo, 0, -1),
+         work = queue$con$lrange(queue$work, 0, -1),
+         done = queue$con$lrange(queue$done, 0, -1),
+         fail = queue$con$lrange(queue$fail, 0, -1),
+         skip = queue$con$lrange(queue$skip, 0, -1))
 }
 
 #' @rdname tinyqueue
@@ -133,9 +140,15 @@ try_consume <- function(queue) {
 
 #' @rdname tinyqueue
 #' @export
-ack <- function(queue, message, check=TRUE) {
+ack <- function(queue, message, res=0, check=TRUE) {
     .tinyqueue_validate(queue)
-    msg <- queue$con$lmove(queue$work, queue$done, 'RIGHT', 'LEFT')
+    stopifnot("Argument 'res' must be numeric" = is.numeric(res),
+              "Argument 'res' must be between 0 and 2" = res >= 0 & res <= 2)
+    tgt <- switch(res + 1,
+                  queue$done,   # res == 0 aka success  
+                  queue$fail,   # res == 1 aka fail
+                  queue$skip)   # res == 2 aka skip
+    msg <- queue$con$lmove(queue$work, tgt, 'RIGHT', 'LEFT')
     cat("Ack'ed '", format(message), "'\n", sep="")
     if (check) stopifnot("wrong message acknowledged" = all.equal(msg, message))
     msg
