@@ -21,8 +21,8 @@ Sys.sleep(0.25)
 st <- end_task(st, "done")
 print(st)
 
-st <- ack(q, st, FALSE) # not checking message here
+st <- ack(q, st, 2, FALSE) # not checking message here
 summary(q)
 
 ## cleanup
-#ignored <- q$con$del("tasks_work")
+ignored <- q$con$del("tasks_skip")

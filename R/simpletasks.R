@@ -1,5 +1,5 @@
 
-taskresult <- as.factor(c("done", "failed", "skipped", "unset", "started"))
+#taskresult <- as.factor(c("done", "failed", "skipped", "unset", "started"))
 #taskresult <- c("done", "failed", "skipped", "unset", "started")
 
 #' @title simpletask: A Simple Task Object
@@ -14,13 +14,7 @@ simpletask <- function(pkg, ver, ...) {
 #' @export
 simpletask.default <- function(pkg, ver) {
     structure(list(package = pkg,
-                   version = ver,
-                   result = "unset",
-                   starttime = NA_real_,
-                   endtime = NA_real_,
-                   runtime = NA_real_,
-                   runner = "",
-                   host = ""),
+                   version = ver),
               class = "simpletask")
               
 }
@@ -30,11 +24,12 @@ simpletask.default <- function(pkg, ver) {
 #' @export
 format.simpletask <- function(x, ...) {
     txt <- paste0("<task: package '", x$package,
-                  " (", x$version, ")' in status '",
-                  x$result, "'",
+                  " (", x$version, ")'",
+                  ##" in status '",
+                  ##x$result, "'",
                   ##" started at ", format(x$starttime),
                   ##" finished at ", format(x$endtime),
-                  " time ", format(x$runtime),
+                  ##" time ", format(x$runtime),
                   ">")
     txt
 }
@@ -49,16 +44,16 @@ print.simpletask <- function(x, ...) {
 start_task <- function(x) {
     ## should this consume a task ?
     stopifnot("object 'x' must be 'simpletask' object" = inherits(x, "simpletask"))
-    x$starttime <- Sys.time()
-    x$result <- "started"
+    #x$starttime <- Sys.time()
+    #x$result <- "started"
     x
 }
 
 end_task <- function(x, res) {
     ## should this ack a task ?
     stopifnot("object 'x' must be 'simpletask' object" = inherits(x, "simpletask"))
-    x$endtime <- Sys.time()
-    x$runtime <- x$endtime - x$starttime
-    x$result <- res
+    #x$endtime <- Sys.time()
+    #x$runtime <- x$endtime - x$starttime
+    #x$result <- res
     x
 }    
