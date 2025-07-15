@@ -41,19 +41,35 @@ print.simpletask <- function(x, ...) {
     cat(format(x, ...), "\n", sep="")
 }
 
-start_task <- function(x) {
-    ## should this consume a task ?
-    stopifnot("object 'x' must be 'simpletask' object" = inherits(x, "simpletask"))
-    #x$starttime <- Sys.time()
-    #x$result <- "started"
-    x
+enqueue_task <- function(q, st) {
+    #print(st)
+    publish(q, st)
+    ## set state ?
 }
 
-end_task <- function(x, res) {
-    ## should this ack a task ?
-    stopifnot("object 'x' must be 'simpletask' object" = inherits(x, "simpletask"))
+.make_name <- function(name) paste0(name,"_","status")
+
+
+start_task <- function(q) {
+    stopifnot("object 'q' must be 'tinyqueue' object" = inherits(q, "tinyqueue"))
+    st <- try_consume(q)  # fetches message
+    q$con$hset(.make_name(q$name), st$package, "started")
+    #x$starttime <- Sys.time()
+    #x$result <- "started"
+    st
+}
+
+end_task <- function(q, st, res) {
+    stopifnot("object 'q' must be 'tinyqueue' object" = inherits(q, "tinyqueue"),
+              "object 'st' must be 'simpletask' object" = inherits(st, "simpletask"),
+              "object 'res' must be character" = inherits(res, "character"),
+              "object 'res' must be one of 'done', 'fail', 'skip'" =
+                  res %in% c("done", "fail", "skip"))
+    map <- c(done = 0, fail = 1, skip = 2)
+    ack(q, st, map[[res]])
+    q$con$hset(.make_name(q$name), st$package, res)
     #x$endtime <- Sys.time()
     #x$runtime <- x$endtime - x$starttime
     #x$result <- res
-    x
+    invisible(q)
 }    
