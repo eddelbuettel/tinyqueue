@@ -25,7 +25,7 @@ summary(q)
 
 msg2 <- try_consume(q)
 #cat("--Consumed message 2\n")
-m2 <- ack(q, msg2)
+m2 <- ack(q, msg2, 1)
 #cat("--Messages after ack 2\n")
 #str(list_messages(q))
 summary(q)
@@ -34,5 +34,4 @@ summary(q)
 msg3 <- try_consume(q)
 summary(q)
 
-cleanup(q)
-
+cleanup(q, "somejobs")
