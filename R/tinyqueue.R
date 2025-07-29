@@ -148,16 +148,21 @@ ack <- function(queue, message, res=0) {
                   queue$done,   # res == 0 aka success  
                   queue$fail,   # res == 1 aka fail
                   queue$skip)   # res == 2 aka skip
-    msg <- queue$con$lmove(queue$work, tgt, 'RIGHT', 'LEFT')
-    stopifnot("wrong message acknowledged" = all.equal(msg, message))
+    cnt <- queue$con$lrem(queue$work, 1, message)
+    stopifnot("could not remove message" = cnt == 1)
+    cnt <- queue$con$lpush(tgt, message)
     cat("Ack'ed '", format(message), "'\n", sep="")
-    msg
+    invisible(cnt)
 }
 
 #' @rdname tinyqueue
 #' @export
-cleanup <- function(queue) {
+cleanup <- function(queue, txt) {
     .tinyqueue_validate(queue)
-    invisible(queue$con$del(queue$done))
+    keys <- queue$con$keys("somejobs*")
+    for (k in keys) {
+        queue$con$del(k)
+    }
+    invisible(NULL)
 }
     
