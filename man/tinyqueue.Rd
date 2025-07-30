@@ -22,7 +22,7 @@ tinyqueue(name, ...)
 
 \method{format}{tinyqueue}(x, ...)
 
-\method{summary}{tinyqueue}(x, ...)
+\method{summary}{tinyqueue}(object, ...)
 
 ensure_queue(name)
 
@@ -34,18 +34,23 @@ try_consume(queue)
 
 ack(queue, message, res = 0)
 
-cleanup(queue)
+cleanup(queue, name)
 }
 \arguments{
-\item{name}{character The task name for}
+\item{name}{character The task name for the queue}
 
 \item{...}{other arguments}
 
 \item{x}{tinyqueue A \code{tinyqueue} object task name for}
 
+\item{object}{tinyqueue A tinyqueue object}
+
 \item{queue}{tinyqueue A \code{tinyqueue} object task name for}
 
 \item{message}{object A R object describing a task that is serialized}
+
+\item{res}{numeric The task result that is acknowledged where default is zero for success,
+one signals failure, and two that the task was skipped}
 }
 \description{
 Create a \code{tinyqueue} object

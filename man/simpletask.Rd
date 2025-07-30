@@ -5,13 +5,48 @@
 \alias{simpletask.default}
 \alias{format.simpletask}
 \alias{print.simpletask}
+\alias{enqueue_task}
+\alias{start_task}
+\alias{end_task}
 \title{simpletask: A Simple Task Object}
 \usage{
 simpletask(pkg, ver, ...)
 
-\method{simpletask}{default}(pkg, ver)
+\method{simpletask}{default}(pkg, ver, ...)
 
 \method{format}{simpletask}(x, ...)
 
 \method{print}{simpletask}(x, ...)
+
+enqueue_task(q, st)
+
+start_task(q)
+
+end_task(q, st, res)
+}
+\arguments{
+\item{pkg}{character A package name}
+
+\item{ver}{character A package version number}
+
+\item{...}{dots Currently ignored}
+
+\item{x}{simpletask A task object}
+
+\item{q}{tinyqueue A \code{tinyqueue} object}
+
+\item{st}{object An R object describing the task that is serialized}
+
+\item{res}{numeric The result code of the completed task, must be between 0 and 2}
+}
+\description{
+Represent a \code{simpletask} object suitable for queuing
+}
+\details{
+A \code{simpletask} objects describes a task, here usually a package name
+for a package to be tested along with a version number. It can be any R object
+as the \code{simplequeue} serializes and de-serializes the object apropriately
+}
+\seealso{
+tinyqueue
 }

@@ -30,7 +30,7 @@
 #' queued task objects are self-sufficient as R objects.
 #'
 #' @title tinyqueue: A Simple Workqueue Object
-#' @param name character The task name for 
+#' @param name character The task name for the queue
 #' @param ... other arguments 
 #' @examples
 #' # This requires Redis or Valkey to run
@@ -93,11 +93,12 @@ format.tinyqueue <- function(x, ...) {
 }
 
 #' @rdname tinyqueue
+#' @param object tinyqueue A tinyqueue object
 #' @method summary tinyqueue 
 #' @export
-summary.tinyqueue <- function(x, ...) {
-    .tinyqueue_validate(x)
-    cat("<tinyqueue object ", format(x), ">\n", sep="")
+summary.tinyqueue <- function(object, ...) {
+    .tinyqueue_validate(object)
+    cat("<tinyqueue object ", format(object), ">\n", sep="")
 }
 
 
@@ -139,6 +140,8 @@ try_consume <- function(queue) {
 }
 
 #' @rdname tinyqueue
+#' @param res numeric The task result that is acknowledged where default is zero for success,
+#' one signals failure, and two that the task was skipped
 #' @export
 ack <- function(queue, message, res=0) {
     .tinyqueue_validate(queue)
@@ -157,9 +160,9 @@ ack <- function(queue, message, res=0) {
 
 #' @rdname tinyqueue
 #' @export
-cleanup <- function(queue, txt) {
+cleanup <- function(queue, name) {
     .tinyqueue_validate(queue)
-    keys <- queue$con$keys("somejobs*")
+    keys <- queue$con$keys(paste0(name, "*"))
     for (k in keys) {
         queue$con$del(k)
     }

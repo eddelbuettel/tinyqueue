@@ -3,3 +3,4 @@
 ^\.Rproj\.user$
 ^\.github$
 ^local
+^demo/nuke.R
