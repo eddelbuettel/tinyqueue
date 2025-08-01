@@ -1,10 +1,12 @@
 Package: tinyqueue
 Type: Package
-Title: Concise Summary of What the Package Does
+Title: A Simple Task Queue
 Version: 0.0.1
 Date: 2025-07-04
 Authors@R: person("Dirk", "Eddelbuettel", role = c("aut", "cre"), email = "edd@debian.org")
-Description: More about what it does (maybe more than one line).
+Description: A task queue is provided with simple operator modeled after existing
+ task queue functionality. By relying on either Redis or Valkey as a backend,
+ a suitable degree of concurrency of worker nodes is provided.
 Imports: methods, RcppRedis
 URL: https://github.com/eddelbuettel/tinyqueue
 BugReports: https://github.com/eddelbuettel/tinyqueue/issues
