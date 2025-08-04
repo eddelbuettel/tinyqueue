@@ -34,7 +34,7 @@ try_consume(queue)
 
 ack(queue, message, res = 0)
 
-cleanup(queue, name)
+cleanup(queue)
 }
 \arguments{
 \item{name}{character The task name for the queue}

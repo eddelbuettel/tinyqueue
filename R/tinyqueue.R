@@ -160,9 +160,9 @@ ack <- function(queue, message, res=0) {
 
 #' @rdname tinyqueue
 #' @export
-cleanup <- function(queue, name) {
+cleanup <- function(queue) {
     .tinyqueue_validate(queue)
-    keys <- queue$con$keys(paste0(name, "*"))
+    keys <- queue$con$keys(paste0(queue$name, "*"))
     for (k in keys) {
         queue$con$del(k)
     }

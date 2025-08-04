@@ -34,4 +34,4 @@ summary(q)
 msg3 <- try_consume(q)
 summary(q)
 
-cleanup(q, "somejobs")
+cleanup(q)
